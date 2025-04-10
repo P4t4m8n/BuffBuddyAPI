@@ -17,6 +17,7 @@ public class ExerciseController : ControllerBase
 
     public ExerciseController(IOutputCacheStore outputCacheStore, ApplicationDbContext context, IMapper mapper)
     {
+
         this.outputCacheStore = outputCacheStore;
         this.context = context;
         this.mapper = mapper;
@@ -24,18 +25,31 @@ public class ExerciseController : ControllerBase
 
     [HttpGet]
     [OutputCache(Tags = [cacheKey])]
-    public async Task<List<ExerciseDto>> Get()
+    public async Task<List<ExerciseDto>> Get([FromQuery] PaginationDTO pagination)
     {
-        return await context.Exercises
+        var queryable = context.Exercises;
+        await HttpContext.InsertPageInHeader(queryable);
+        return await queryable
+        .OrderBy(x => x.Name)
+        .Paginate(pagination)
         .ProjectTo<ExerciseDto>(mapper.ConfigurationProvider)
         .ToListAsync();
 
     }
     [HttpGet("{id}", Name = "GetExerciseById")]
     [OutputCache]
-    public async Task<ActionResult<Exercise>> Get(string id)
+    public async Task<ActionResult<ExerciseDto>> Get(string id)
     {
-        throw new NotImplementedException();
+        var exercise = await context.Exercises
+        .ProjectTo<ExerciseDto>(mapper.ConfigurationProvider)
+        .FirstOrDefaultAsync(x => x.Id == id);
+
+        if (exercise is null)
+        {
+            return NotFound();
+        }
+
+        return exercise;
 
     }
 
@@ -46,19 +60,47 @@ public class ExerciseController : ControllerBase
         context.Add(exercise);
         await context.SaveChangesAsync();
         await outputCacheStore.EvictByTagAsync(cacheKey, default);
-        // var returnDto = mapper.Map<ExerciseDto>(exercise);
-        return CreatedAtRoute("GetExerciseById", new { id = exercise.Id }, exercise);
+        var returnDto = mapper.Map<ExerciseDto>(exercise);
+        return CreatedAtRoute("GetExerciseById", new { id = returnDto.Id }, returnDto);
     }
 
 
-    [HttpPut]
-    public void Put()
+    [HttpPut("{id}")]
+    public async Task<IActionResult> Put(string id, [FromBody] ExerciseDto dto)
     {
+        Console.WriteLine($"Id");
+        var guidId = Guid.Parse(id);
+        var exerciseExists = await context.Exercises.AnyAsync(x => x.Id == guidId);
+        if (!exerciseExists)
+        {
+            return NotFound();
+        }
+
+        var exercise = mapper.Map<Exercise>(dto);
+        exercise.Id = guidId;
+        context.Update(exercise);
+        await context.SaveChangesAsync();
+        await outputCacheStore.EvictByTagAsync(cacheKey, default);
+
+        var returnDto = mapper.Map<ExerciseDto>(exercise);
+        return Ok(returnDto);
 
     }
-    [HttpDelete]
-    public void Delete()
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Delete(string id)
     {
+
+        var guidId = Guid.Parse(id);
+        var deletedRecord = await context.Exercises.Where(x => x.Id == guidId).ExecuteDeleteAsync();
+        if (deletedRecord == 0)
+        {
+            return NotFound();
+        }
+
+
+        await outputCacheStore.EvictByTagAsync(cacheKey, default);
+        return NoContent();
+
 
     }
 }
