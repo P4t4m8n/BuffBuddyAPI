@@ -4,6 +4,7 @@ using BuffBuddyAPI;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BuffBuddyAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250415134522_addMisc")]
+    partial class addMisc
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -48,11 +51,12 @@ namespace BuffBuddyAPI.Migrations
                     b.Property<Guid>("EquipmentId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("ExerciseIconId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<Guid>("ExerciseTypeId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ImgUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -70,33 +74,11 @@ namespace BuffBuddyAPI.Migrations
 
                     b.HasIndex("EquipmentId");
 
-                    b.HasIndex("ExerciseIconId");
-
                     b.HasIndex("ExerciseTypeId");
 
                     b.HasIndex("TargetMuscleId");
 
                     b.ToTable("Exercises");
-                });
-
-            modelBuilder.Entity("BuffBuddyAPI.ExerciseIcon", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("ImgUrl")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("ExerciseIcon");
                 });
 
             modelBuilder.Entity("BuffBuddyAPI.ExerciseType", b =>
@@ -139,12 +121,6 @@ namespace BuffBuddyAPI.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("BuffBuddyAPI.ExerciseIcon", "ExerciseIcon")
-                        .WithMany()
-                        .HasForeignKey("ExerciseIconId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("BuffBuddyAPI.ExerciseType", "ExerciseType")
                         .WithMany()
                         .HasForeignKey("ExerciseTypeId")
@@ -158,8 +134,6 @@ namespace BuffBuddyAPI.Migrations
                         .IsRequired();
 
                     b.Navigation("Equipment");
-
-                    b.Navigation("ExerciseIcon");
 
                     b.Navigation("ExerciseType");
 

@@ -1,14 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
 namespace BuffBuddyAPI;
 
-public class ExerciseDto
+public class ExerciseDTO
 {
     public string? Id { get; set; }
-    // [Required(ErrorMessage = "{0} is required")]
-    // [StringLength(100, ErrorMessage = "{0} cannot be longer than 100 characters")]
     public string? Name { get; set; }
-    // [Required(ErrorMessage = "{0} is required")]
-    // [Url(ErrorMessage = "{0} is not a valid URL")]
     public string? YoutubeUrl { get; set; }
     public string? Type { get; set; }
     public string? Equipment { get; set; }

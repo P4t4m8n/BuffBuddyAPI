@@ -25,23 +25,23 @@ public class ExerciseController : ControllerBase
 
     [HttpGet]
     [OutputCache(Tags = [cacheKey])]
-    public async Task<List<ExerciseDto>> Get([FromQuery] PaginationDTO pagination)
+    public async Task<List<ExerciseDTO>> Get([FromQuery] PaginationDTO pagination)
     {
         var queryable = context.Exercises;
         await HttpContext.InsertPageInHeader(queryable);
         return await queryable
         .OrderBy(x => x.Name)
         .Paginate(pagination)
-        .ProjectTo<ExerciseDto>(mapper.ConfigurationProvider)
+        .ProjectTo<ExerciseDTO>(mapper.ConfigurationProvider)
         .ToListAsync();
 
     }
     [HttpGet("{id}", Name = "GetExerciseById")]
     [OutputCache]
-    public async Task<ActionResult<ExerciseDto>> Get(string id)
+    public async Task<ActionResult<ExerciseDTO>> Get(string id)
     {
         var exercise = await context.Exercises
-        .ProjectTo<ExerciseDto>(mapper.ConfigurationProvider)
+        .ProjectTo<ExerciseDTO>(mapper.ConfigurationProvider)
         .FirstOrDefaultAsync(x => x.Id == id);
 
         if (exercise is null)
@@ -54,19 +54,19 @@ public class ExerciseController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<CreatedAtRouteResult> Post([FromBody] ExerciseDto dto)
+    public async Task<CreatedAtRouteResult> Post([FromBody] ExerciseEditDTO dto)
     {
         var exercise = mapper.Map<Exercise>(dto);
         context.Add(exercise);
         await context.SaveChangesAsync();
         await outputCacheStore.EvictByTagAsync(cacheKey, default);
-        var returnDto = mapper.Map<ExerciseDto>(exercise);
+        var returnDto = mapper.Map<ExerciseDTO>(exercise);
         return CreatedAtRoute("GetExerciseById", new { id = returnDto.Id }, returnDto);
     }
 
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> Put(string id, [FromBody] ExerciseDto dto)
+    public async Task<IActionResult> Put(string id, [FromBody] ExerciseEditDTO dto)
     {
         Console.WriteLine($"Id");
         var guidId = Guid.Parse(id);
@@ -82,7 +82,7 @@ public class ExerciseController : ControllerBase
         await context.SaveChangesAsync();
         await outputCacheStore.EvictByTagAsync(cacheKey, default);
 
-        var returnDto = mapper.Map<ExerciseDto>(exercise);
+        var returnDto = mapper.Map<ExerciseDTO>(exercise);
         return Ok(returnDto);
 
     }
