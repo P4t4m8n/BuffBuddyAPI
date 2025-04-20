@@ -6,13 +6,13 @@ namespace BuffBuddyAPI;
 
 public class AzureFileStorage : IFileStorage
 {
-    private readonly string connectionString;
+    private readonly string? connectionString;
 
     public AzureFileStorage(IConfiguration configuration)
     {
-        connectionString = configuration.GetConnectionString("AzureStorageConnection")
-       ?? Environment.GetEnvironmentVariable("AZURE_STORAGE_CONNECTION_STRING")
-       ?? throw new ArgumentNullException("Azure Storage connection string is not configured");
+        connectionString = configuration["AZURE_STORAGE_CONNECTION_STRING"]
+             ?? Environment.GetEnvironmentVariable("AZURE_STORAGE_CONNECTION_STRING")
+             ?? throw new ArgumentNullException("Azure Storage connection string is not configured");
     }
     public async Task Delete(string? route, string container)
     {
@@ -25,6 +25,7 @@ public class AzureFileStorage : IFileStorage
         var fileName = Path.GetFileName(route);
         var blob = client.GetBlobClient(fileName);
         await blob.DeleteIfExistsAsync();
+
     }
 
     public async Task<string> Store(string container, IFormFile file)

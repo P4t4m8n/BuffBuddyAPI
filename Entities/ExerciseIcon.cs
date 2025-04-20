@@ -14,6 +14,6 @@ public class ExerciseIcon
     public required string Name { get; set; }
     [Required(ErrorMessage = "required")]
     [Url(ErrorMessage = "Not a valid URL")]
-    public required string? ImgUrl { get; set; }
+    public  string? ImgUrl { get; set; }
 
 }

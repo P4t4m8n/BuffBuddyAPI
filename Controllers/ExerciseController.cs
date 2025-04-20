@@ -68,7 +68,6 @@ public class ExerciseController : ControllerBase
     [HttpPut("{id}")]
     public async Task<IActionResult> Put(string id, [FromBody] ExerciseEditDTO dto)
     {
-        Console.WriteLine($"Id");
         var guidId = Guid.Parse(id);
         var exerciseExists = await context.Exercises.AnyAsync(x => x.Id == guidId);
         if (!exerciseExists)
@@ -100,7 +99,5 @@ public class ExerciseController : ControllerBase
 
         await outputCacheStore.EvictByTagAsync(cacheKey, default);
         return NoContent();
-
-
     }
 }

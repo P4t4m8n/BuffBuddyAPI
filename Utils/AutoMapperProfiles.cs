@@ -32,9 +32,11 @@ public class AutoMapperProfiles : Profile
     private void ConfigureExerciseIcons()
     {
         CreateMap<ExerciseIconEditDTO, ExerciseIcon>()
-            .ForMember(dest => dest.Id, opt => opt
-            .MapFrom(src => string.IsNullOrEmpty(src.Id) ? Guid.Empty : Guid.Parse(src.Id)))
-            .ForMember(dest => dest.ImgUrl, opt => opt.Ignore());
+      .ForMember(dest => dest.Id, opt => opt
+          .MapFrom(src => string.IsNullOrEmpty(src.Id) ? Guid.Empty : Guid.Parse(src.Id)))
+      .ForMember(dest => dest.ImgUrl, opt => opt
+          .MapFrom(src => src.ImgUrl));
+
 
         CreateMap<ExerciseIcon, ExerciseIconDTO>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src =>

@@ -7,6 +7,8 @@ using Microsoft.EntityFrameworkCore;
 
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Configuration.AddEnvironmentVariables();
+var azureString = builder.Configuration["AZURE_STORAGE_CONNECTION_STRING"];
 
 // Add services to the container.
 
@@ -39,6 +41,7 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddAutoMapper(typeof(Program));
 
 builder.Services.AddTransient<IFileStorage, AzureFileStorage>();
+
 
 var app = builder.Build();
 

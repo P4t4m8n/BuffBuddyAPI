@@ -26,13 +26,19 @@ public class ExerciseIconController : ControllerBase
         this.mapper = mapper;
         this.fileStorage = fileStorage;
     }
-    // [HttpGet]
-    // [OutputCache(Tags = [cacheKey])]
-    // public async Task<List<ExerciseIconDTO>> Get([FromQuery] PaginationDTO pagination)
-    // {
-    //     throw new NotImplementedException("ExerciseIconController.Get() is not implemented yet.");
+    [HttpGet]
+    [OutputCache(Tags = [cacheKey])]
+    public async Task<List<ExerciseIconDTO>> Get([FromQuery] PaginationDTO pagination)
+    {
+        var queryable = context.ExerciseIcons;
+        await HttpContext.InsertPageInHeader(queryable);
+        return await queryable
+        .OrderBy(x => x.Name)
+        .Paginate(pagination)
+        .ProjectTo<ExerciseIconDTO>(mapper.ConfigurationProvider)
+        .ToListAsync();
 
-    // }
+    }
 
     [HttpGet("{id}", Name = "GetExerciseIconById")]
     [OutputCache]
@@ -47,9 +53,6 @@ public class ExerciseIconController : ControllerBase
         }
 
         return exerciseIcon;
-
-
-
     }
 
     [HttpPost]
@@ -60,24 +63,70 @@ public class ExerciseIconController : ControllerBase
         if (dto.File is not null)
         {
             var url = await fileStorage.Store(container, dto.File);
-            Console.WriteLine(url);
 
             exerciseIcon.ImgUrl = url;
 
         }
-        string json = System.Text.Json.JsonSerializer.Serialize(exerciseIcon, new System.Text.Json.JsonSerializerOptions
-        {
-            WriteIndented = true
-        });
-        Console.WriteLine(json);
 
         context.Add(exerciseIcon);
         await context.SaveChangesAsync();
         await outputCacheStore.EvictByTagAsync(cacheKey, default);
         return new CreatedAtRouteResult("GetExerciseIconById", new { id = exerciseIcon.Id }, exerciseIcon);
-        // return Ok();
-
     }
 
+    [HttpPut("{id}")]
+    public async Task<IActionResult> Put(string id, [FromForm] ExerciseIconEditDTO dto)
+    {
+        var guidId = Guid.Parse(id);
+        var exerciseIconExists = await context.ExerciseIcons.AnyAsync(x => x.Id == guidId);
+        if (!exerciseIconExists)
+        {
+            return NotFound();
+        }
+
+        var exerciseIcon = mapper.Map<ExerciseIconEditDTO, ExerciseIcon>(dto);
+
+        if (dto.File is not null)
+        {
+            if (exerciseIcon.ImgUrl is not null)
+            {
+                await fileStorage.Delete(exerciseIcon.ImgUrl, container);
+            }
+            var url = await fileStorage.Store(container, dto.File);
+
+            exerciseIcon.ImgUrl = url;
+
+        }
+        exerciseIcon.Id = guidId;
+        context.Update(exerciseIcon);
+        await context.SaveChangesAsync();
+        await outputCacheStore.EvictByTagAsync(cacheKey, default);
+
+        var returnDto = mapper.Map<ExerciseIconDTO>(exerciseIcon);
+        return Ok(returnDto);
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Delete(string id)
+    {
+
+        var guidId = Guid.Parse(id);
+        var recordToDelete = await context.ExerciseIcons.FirstOrDefaultAsync(x => x.Id == guidId);
+        if (recordToDelete is null)
+        {
+            return NotFound();
+        }
+        await fileStorage.Delete(recordToDelete.ImgUrl, container);
+
+        var deletedRecord = await context.ExerciseIcons.Where(x => x.Id == guidId).ExecuteDeleteAsync();
+        if (deletedRecord == 0)
+        {
+            return NotFound();
+        }
+
+
+        await outputCacheStore.EvictByTagAsync(cacheKey, default);
+        return NoContent();
+    }
 
 }
