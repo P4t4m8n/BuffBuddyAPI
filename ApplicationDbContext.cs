@@ -16,6 +16,12 @@ public class ApplicationDbContext : DbContext
   .Property(e => e.Id)
   .HasDefaultValueSql("NEWID()");
 
+
+    modelBuilder.Entity<ExerciseIcon>()
+    .Property(e => e.CreateAt)
+    .HasDefaultValueSql("GETUTCDATE()");
+
+
   }
 
 }

@@ -85,6 +85,11 @@ namespace BuffBuddyAPI.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<DateTime>("CreateAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
                     b.Property<string>("ImgUrl")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -96,7 +101,7 @@ namespace BuffBuddyAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ExerciseIcon");
+                    b.ToTable("ExerciseIcons");
                 });
 
             modelBuilder.Entity("BuffBuddyAPI.ExerciseType", b =>
