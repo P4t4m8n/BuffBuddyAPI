@@ -8,7 +8,7 @@ public class AutoMapperProfiles : Profile
     public AutoMapperProfiles()
     {
         ConfigureExercises();
-        ConfigureExerciseIcons();
+        ConfigureExerciseMuscles();
     }
 
     private void ConfigureExercises()
@@ -20,8 +20,8 @@ public class AutoMapperProfiles : Profile
                     .MapFrom(src => string.IsNullOrEmpty(src.ExerciseTypeId) ? Guid.Empty : Guid.Parse(src.ExerciseTypeId)))
                 .ForMember(dest => dest.EquipmentId, opt => opt
                     .MapFrom(src => string.IsNullOrEmpty(src.EquipmentId) ? Guid.Empty : Guid.Parse(src.EquipmentId)))
-                .ForMember(dest => dest.TargetMuscleId, opt => opt
-                    .MapFrom(src => string.IsNullOrEmpty(src.TargetMuscleId) ? Guid.Empty : Guid.Parse(src.TargetMuscleId)));
+                .ForMember(dest => dest.ExerciseMuscleId, opt => opt
+                    .MapFrom(src => string.IsNullOrEmpty(src.ExerciseMuscleId) ? Guid.Empty : Guid.Parse(src.ExerciseMuscleId)));
 
         CreateMap<Exercise, ExerciseDTO>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src =>
@@ -29,16 +29,16 @@ public class AutoMapperProfiles : Profile
 
     }
 
-    private void ConfigureExerciseIcons()
+    private void ConfigureExerciseMuscles()
     {
-        CreateMap<ExerciseIconEditDTO, ExerciseIcon>()
+        CreateMap<ExerciseMuscleEditDTO, ExerciseMuscle>()
       .ForMember(dest => dest.Id, opt => opt
           .MapFrom(src => string.IsNullOrEmpty(src.Id) ? Guid.Empty : Guid.Parse(src.Id)))
       .ForMember(dest => dest.ImgUrl, opt => opt
           .MapFrom(src => src.ImgUrl));
 
 
-        CreateMap<ExerciseIcon, ExerciseIconDTO>()
+        CreateMap<ExerciseMuscle, ExerciseMuscleDTO>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src =>
                 src.Id == Guid.Empty ? null : src.Id.ToString()));
     }

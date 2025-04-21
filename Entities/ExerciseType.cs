@@ -11,4 +11,8 @@ public class ExerciseType
     [Required(ErrorMessage = "required")]
     [StringLength(50, MinimumLength = 3, ErrorMessage = "Must be between {2} and {1} characters long")]
     public string? Name { get; set; }
+    [Required(ErrorMessage = "required")]
+    [Url(ErrorMessage = "Not a valid URL")]
+    public string? ImgUrl { get; set; }
+    public DateTime CreateAt { get; set; }
 }

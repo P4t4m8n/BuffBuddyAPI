@@ -5,7 +5,7 @@ namespace BuffBuddyAPI;
 public class ApplicationDbContext : DbContext
 {
   public DbSet<Exercise> Exercises { get; set; }
-  public DbSet<ExerciseIcon> ExerciseIcons { get; set; }
+  public DbSet<ExerciseMuscle> ExerciseMuscles { get; set; }
   public ApplicationDbContext(DbContextOptions options) : base(options)
   {
   }
@@ -17,7 +17,7 @@ public class ApplicationDbContext : DbContext
   .HasDefaultValueSql("NEWID()");
 
 
-    modelBuilder.Entity<ExerciseIcon>()
+    modelBuilder.Entity<ExerciseMuscle>()
     .Property(e => e.CreateAt)
     .HasDefaultValueSql("GETUTCDATE()");
 

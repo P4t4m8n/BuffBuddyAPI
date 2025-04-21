@@ -1,6 +1,6 @@
 ﻿namespace BuffBuddyAPI;
 
-public class ExerciseIconDTO
+public class ExerciseMuscleDTO : IID
 {
     public required string Id { get; set; }
     public required string Name { get; set; }

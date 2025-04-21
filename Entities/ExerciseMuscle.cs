@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BuffBuddyAPI;
 
-public class ExerciseIcon
+public class ExerciseMuscle : IGuid
 {
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]

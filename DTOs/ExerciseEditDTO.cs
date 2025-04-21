@@ -16,6 +16,6 @@ public class ExerciseEditDTO
     [Required(ErrorMessage = "required")]
     public string? EquipmentId { get; set; }
     [Required(ErrorMessage = "required")]
-    public string? TargetMuscleId { get; set; }
+    public string? ExerciseMuscleId { get; set; }
 
 }
