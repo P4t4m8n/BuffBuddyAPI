@@ -32,7 +32,7 @@ public class Exercise
     public ExerciseType? ExerciseType { get; set; }
 
     [ForeignKey("EquipmentId")]
-    public Equipment? Equipment { get; set; }
+    public ExerciseEquipment? Equipment { get; set; }
 
 
 }
