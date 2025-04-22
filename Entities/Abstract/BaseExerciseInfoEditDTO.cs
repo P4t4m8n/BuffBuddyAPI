@@ -3,7 +3,7 @@
 using System.ComponentModel.DataAnnotations;
 
 namespace BuffBuddyAPI;
-public abstract class BaseExerciseInfoEdit : BaseExerciseInfo, IIDEdit
+public abstract class BaseExerciseInfoEditDTO : BaseExerciseInfo, IIDEdit
 {
     public string? Id { get; set; }
     public IFormFile? File { get; set; }

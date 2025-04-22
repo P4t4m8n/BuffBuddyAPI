@@ -8,7 +8,8 @@ public class AutoMapperProfiles : Profile
     public AutoMapperProfiles()
     {
         ConfigureExercises();
-        ConfigureExerciseMuscles();
+        // ConfigureExerciseMuscles();
+        ConfigureExerciseInfo();
     }
 
     private void ConfigureExercises()
@@ -18,7 +19,7 @@ public class AutoMapperProfiles : Profile
                     .MapFrom(src => string.IsNullOrEmpty(src.Id) ? Guid.Empty : Guid.Parse(src.Id)))
                 .ForMember(dest => dest.ExerciseTypeId, opt => opt
                     .MapFrom(src => string.IsNullOrEmpty(src.ExerciseTypeId) ? Guid.Empty : Guid.Parse(src.ExerciseTypeId)))
-                .ForMember(dest => dest.EquipmentId, opt => opt
+                .ForMember(dest => dest.ExerciseEquipmentId, opt => opt
                     .MapFrom(src => string.IsNullOrEmpty(src.EquipmentId) ? Guid.Empty : Guid.Parse(src.EquipmentId)))
                 .ForMember(dest => dest.ExerciseMuscleId, opt => opt
                     .MapFrom(src => string.IsNullOrEmpty(src.ExerciseMuscleId) ? Guid.Empty : Guid.Parse(src.ExerciseMuscleId)));
@@ -29,17 +30,40 @@ public class AutoMapperProfiles : Profile
 
     }
 
-    private void ConfigureExerciseMuscles()
+    // private void ConfigureExerciseMuscles()
+    // {
+    //     CreateMap<ExerciseMuscleEditDTO, ExerciseMuscle>()
+    //   .ForMember(dest => dest.Id, opt => opt
+    //       .MapFrom(src => string.IsNullOrEmpty(src.Id) ? Guid.Empty : Guid.Parse(src.Id)))
+    //   .ForMember(dest => dest.ImgUrl, opt => opt
+    //       .MapFrom(src => src.ImgUrl));
+
+
+    //     CreateMap<ExerciseMuscle, ExerciseMuscleDTO>()
+    //         .ForMember(dest => dest.Id, opt => opt.MapFrom(src =>
+    //             src.Id == Guid.Empty ? null : src.Id.ToString()));
+    // }
+
+    private void ConfigureExerciseInfo()
     {
-        CreateMap<ExerciseMuscleEditDTO, ExerciseMuscle>()
-      .ForMember(dest => dest.Id, opt => opt
-          .MapFrom(src => string.IsNullOrEmpty(src.Id) ? Guid.Empty : Guid.Parse(src.Id)))
-      .ForMember(dest => dest.ImgUrl, opt => opt
-          .MapFrom(src => src.ImgUrl));
+        CreateMap(typeof(BaseExerciseInfoEditDTO), typeof(BaseExerciseInfoEntity))
+            .ForMember("Id", opt => opt
+                .MapFrom(src => string.IsNullOrEmpty(((IIDEdit)src).Id) ?
+                        Guid.Empty : Guid.Parse(((IIDEdit)src).Id!)))
+            .ForMember("ImgUrl", opt => opt
+                .MapFrom(src => ((BaseExerciseInfoEditDTO)src).ImgUrl));
 
+        CreateMap<ExerciseMuscleEditDTO, ExerciseMuscle>();
+        CreateMap<ExerciseEquipmentEditDTO, ExerciseEquipment>();
+        CreateMap<ExerciseTypeEditDTO, ExerciseType>();
 
-        CreateMap<ExerciseMuscle, ExerciseMuscleDTO>()
-            .ForMember(dest => dest.Id, opt => opt.MapFrom(src =>
-                src.Id == Guid.Empty ? null : src.Id.ToString()));
+        CreateMap(typeof(BaseExerciseInfoEntity), typeof(BaseExerciseInfoDTO))
+            .ForMember("Id", opt => opt.MapFrom(src =>
+                ((BaseExerciseInfoEntity)src).Id == Guid.Empty ?
+                null : ((BaseExerciseInfoEntity)src).Id.ToString()));
+
+        CreateMap<ExerciseMuscle, ExerciseMuscleDTO>();
+        CreateMap<ExerciseEquipment, ExerciseEquipmentDTO>();
+        CreateMap<ExerciseType, ExerciseTypeDTO>();
     }
 }

@@ -4,6 +4,7 @@ using BuffBuddyAPI;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BuffBuddyAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250422151549_UpdateExerciseInfo")]
+    partial class UpdateExerciseInfo
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -29,7 +32,7 @@ namespace BuffBuddyAPI.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasDefaultValueSql("NEWID()");
 
-                    b.Property<Guid>("ExerciseEquipmentId")
+                    b.Property<Guid>("EquipmentId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid?>("ExerciseIconId")
@@ -52,7 +55,7 @@ namespace BuffBuddyAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ExerciseEquipmentId");
+                    b.HasIndex("EquipmentId");
 
                     b.HasIndex("ExerciseIconId");
 
@@ -138,9 +141,9 @@ namespace BuffBuddyAPI.Migrations
 
             modelBuilder.Entity("BuffBuddyAPI.Exercise", b =>
                 {
-                    b.HasOne("BuffBuddyAPI.ExerciseEquipment", "ExerciseEquipment")
+                    b.HasOne("BuffBuddyAPI.ExerciseEquipment", "Equipment")
                         .WithMany()
-                        .HasForeignKey("ExerciseEquipmentId")
+                        .HasForeignKey("EquipmentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -154,7 +157,7 @@ namespace BuffBuddyAPI.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("ExerciseEquipment");
+                    b.Navigation("Equipment");
 
                     b.Navigation("ExerciseIMuscle");
 

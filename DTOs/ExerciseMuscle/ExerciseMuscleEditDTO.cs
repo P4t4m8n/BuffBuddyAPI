@@ -1,2 +1,2 @@
 ﻿namespace BuffBuddyAPI;
-public class ExerciseMuscleEditDTO : BaseExerciseInfoEdit, IIDEdit { }
+public class ExerciseMuscleEditDTO : BaseExerciseInfoEditDTO { }

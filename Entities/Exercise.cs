@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BuffBuddyAPI;
 
-public class Exercise
+public class Exercise : IGuid
 {
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -22,14 +22,14 @@ public class Exercise
     [Required(ErrorMessage = "required")]
     public Guid ExerciseTypeId { get; set; }
     [Required(ErrorMessage = "required")]
-    public Guid EquipmentId { get; set; }
+    public Guid ExerciseEquipmentId { get; set; }
     // Navigation properties
     [ForeignKey("ExerciseIconId")]
     public ExerciseMuscle? ExerciseIMuscle { get; set; }
     [ForeignKey("ExerciseTypeId")]
     public ExerciseType? ExerciseType { get; set; }
-    [ForeignKey("EquipmentId")]
-    public ExerciseEquipment? Equipment { get; set; }
+    [ForeignKey("ExerciseEquipmentId")]
+    public ExerciseEquipment? ExerciseEquipment { get; set; }
 
 
 }

@@ -6,6 +6,8 @@ public class ApplicationDbContext : DbContext
 {
   public DbSet<Exercise> Exercises { get; set; }
   public DbSet<ExerciseMuscle> ExerciseMuscles { get; set; }
+  public DbSet<ExerciseType> ExerciseTypes { get; set; }
+  public DbSet<ExerciseEquipment> ExerciseEquipments { get; set; }
   public ApplicationDbContext(DbContextOptions options) : base(options)
   {
   }
@@ -20,6 +22,16 @@ public class ApplicationDbContext : DbContext
     modelBuilder.Entity<ExerciseMuscle>()
     .Property(e => e.CreateAt)
     .HasDefaultValueSql("GETUTCDATE()");
+    
+    modelBuilder.Entity<ExerciseType>()
+    .Property(e => e.CreateAt)
+    .HasDefaultValueSql("GETUTCDATE()");
+
+    modelBuilder.Entity<ExerciseEquipment>()
+    .Property(e => e.CreateAt)
+    .HasDefaultValueSql("GETUTCDATE()");
+
+
 
 
   }
