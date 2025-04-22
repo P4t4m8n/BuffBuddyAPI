@@ -113,7 +113,7 @@ public class BaseController : ControllerBase
     protected async Task<IActionResult> PutWithFile<TEdit, T, TDTO>(string id, TEdit editDTO,
         Func<TEdit, IFormFile?> getFile,
         string container)
-        where T : BaseExerciseInfo
+        where T : BaseExerciseInfoEntity
         where TDTO : class
     {
         var guidId = Guid.Parse(id);

@@ -1,0 +1,13 @@
+﻿
+
+using System.ComponentModel.DataAnnotations;
+
+namespace BuffBuddyAPI;
+public abstract class BaseExerciseInfoEdit : BaseExerciseInfo, IIDEdit
+{
+    public string? Id { get; set; }
+    public IFormFile? File { get; set; }
+    [Url(ErrorMessage = "Not a valid URL")]
+    public override string? ImgUrl { get; set; }
+
+}

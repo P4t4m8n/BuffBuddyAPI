@@ -1,7 +1,7 @@
 
 namespace BuffBuddyAPI;
 
-public class ExerciseType : BaseExerciseInfo
+public class ExerciseType : BaseExerciseInfoEntity
 {
 
 }
