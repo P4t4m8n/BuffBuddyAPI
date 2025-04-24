@@ -1,24 +1,12 @@
-﻿using System.ComponentModel.DataAnnotations;
-namespace BuffBuddyAPI;
+﻿namespace BuffBuddyAPI;
 
-public class ExerciseDTO
+public class ExerciseDTO : IID
 {
-    public string? Id { get; set; }
-    [Required(ErrorMessage = "required")]
-    [StringLength(50, MinimumLength = 3, ErrorMessage = "Must be between {2} and {1} characters long")]
-    [RegularExpression(@"^[a-zA-Z0-9\s]+$", ErrorMessage = "Only alphanumeric characters and spaces are allowed.")]
-  
-    public string? Name { get; set; }
-    [Required(ErrorMessage = "required")]
-    [Url(ErrorMessage = "Not a valid URL")]
+    public required string Id { get; set; }
+    public required string Name { get; set; }
     public string? YoutubeUrl { get; set; }
-    [Required(ErrorMessage = "required")]
-    public string? Type { get; set; }
-    [Required(ErrorMessage = "required")]
-    public string? Equipment { get; set; }
-    [Required(ErrorMessage = "required")]
-    public string? Muscle { get; set; }
-    [Required(ErrorMessage = "required")]
-    public string? ImgUrl { get; set; }
+    public ExerciseTypeDTO? Type { get; set; }
+    public ExerciseEquipmentDTO? Equipment { get; set; }
+    public ExerciseMuscleDTO? Muscle { get; set; }
 
 }

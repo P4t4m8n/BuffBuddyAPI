@@ -4,11 +4,9 @@ namespace BuffBuddyAPI;
 
 public class AutoMapperProfiles : Profile
 {
-
     public AutoMapperProfiles()
     {
         ConfigureExercises();
-        // ConfigureExerciseMuscles();
         ConfigureExerciseInfo();
     }
 
@@ -20,30 +18,17 @@ public class AutoMapperProfiles : Profile
                 .ForMember(dest => dest.ExerciseTypeId, opt => opt
                     .MapFrom(src => string.IsNullOrEmpty(src.ExerciseTypeId) ? Guid.Empty : Guid.Parse(src.ExerciseTypeId)))
                 .ForMember(dest => dest.ExerciseEquipmentId, opt => opt
-                    .MapFrom(src => string.IsNullOrEmpty(src.EquipmentId) ? Guid.Empty : Guid.Parse(src.EquipmentId)))
+                    .MapFrom(src => string.IsNullOrEmpty(src.ExerciseEquipmentId) ? Guid.Empty : Guid.Parse(src.ExerciseEquipmentId)))
                 .ForMember(dest => dest.ExerciseMuscleId, opt => opt
                     .MapFrom(src => string.IsNullOrEmpty(src.ExerciseMuscleId) ? Guid.Empty : Guid.Parse(src.ExerciseMuscleId)));
 
         CreateMap<Exercise, ExerciseDTO>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src =>
-                src.Id == Guid.Empty ? null : src.Id.ToString()));
-
+                src.Id == Guid.Empty ? null : src.Id.ToString()))
+            .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.ExerciseType))
+            .ForMember(dest => dest.Equipment, opt => opt.MapFrom(src => src.ExerciseEquipment))
+            .ForMember(dest => dest.Muscle, opt => opt.MapFrom(src => src.ExerciseMuscle)); ;
     }
-
-    // private void ConfigureExerciseMuscles()
-    // {
-    //     CreateMap<ExerciseMuscleEditDTO, ExerciseMuscle>()
-    //   .ForMember(dest => dest.Id, opt => opt
-    //       .MapFrom(src => string.IsNullOrEmpty(src.Id) ? Guid.Empty : Guid.Parse(src.Id)))
-    //   .ForMember(dest => dest.ImgUrl, opt => opt
-    //       .MapFrom(src => src.ImgUrl));
-
-
-    //     CreateMap<ExerciseMuscle, ExerciseMuscleDTO>()
-    //         .ForMember(dest => dest.Id, opt => opt.MapFrom(src =>
-    //             src.Id == Guid.Empty ? null : src.Id.ToString()));
-    // }
-
     private void ConfigureExerciseInfo()
     {
         CreateMap(typeof(BaseExerciseInfoEditDTO), typeof(BaseExerciseInfoEntity))

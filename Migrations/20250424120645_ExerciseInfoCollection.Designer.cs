@@ -4,6 +4,7 @@ using BuffBuddyAPI;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BuffBuddyAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250424120645_ExerciseInfoCollection")]
+    partial class ExerciseInfoCollection
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -141,7 +144,7 @@ namespace BuffBuddyAPI.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("BuffBuddyAPI.ExerciseMuscle", "ExerciseMuscle")
+                    b.HasOne("BuffBuddyAPI.ExerciseMuscle", "ExerciseIMuscle")
                         .WithMany("Exercises")
                         .HasForeignKey("ExerciseMuscleId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -155,7 +158,7 @@ namespace BuffBuddyAPI.Migrations
 
                     b.Navigation("ExerciseEquipment");
 
-                    b.Navigation("ExerciseMuscle");
+                    b.Navigation("ExerciseIMuscle");
 
                     b.Navigation("ExerciseType");
                 });

@@ -24,8 +24,8 @@ public class Exercise : IGuid
     [Required(ErrorMessage = "required")]
     public Guid ExerciseEquipmentId { get; set; }
     // Navigation properties
-    [ForeignKey("ExerciseIconId")]
-    public ExerciseMuscle? ExerciseIMuscle { get; set; }
+    [ForeignKey("ExerciseMuscleId")]
+    public ExerciseMuscle? ExerciseMuscle { get; set; }
     [ForeignKey("ExerciseTypeId")]
     public ExerciseType? ExerciseType { get; set; }
     [ForeignKey("ExerciseEquipmentId")]

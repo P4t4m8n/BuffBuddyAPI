@@ -11,4 +11,6 @@ public abstract class BaseExerciseInfoEntity : BaseExerciseInfo, IGuid, ICreateA
     [Url(ErrorMessage = "Not a valid URL")]
     public override string? ImgUrl { get; set; }
     public DateTime CreateAt { get; set; }
+    public ICollection<Exercise>? Exercises { get; set; }
+
 }

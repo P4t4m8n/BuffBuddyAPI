@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BuffBuddyAPI;
 
-[Route("api/v1/exercises")]
+[Route("api/v1/exercise")]
 [ApiController]
 public class ExerciseController : ControllerBase
 {
@@ -28,6 +28,8 @@ public class ExerciseController : ControllerBase
     public async Task<List<ExerciseDTO>> Get([FromQuery] PaginationDTO pagination)
     {
         var queryable = context.Exercises;
+
+
         await HttpContext.InsertPageInHeader(queryable);
         return await queryable
         .OrderBy(x => x.Name)
@@ -41,6 +43,7 @@ public class ExerciseController : ControllerBase
     public async Task<ActionResult<ExerciseDTO>> Get(string id)
     {
         var exercise = await context.Exercises
+
         .ProjectTo<ExerciseDTO>(mapper.ConfigurationProvider)
         .FirstOrDefaultAsync(x => x.Id == id);
 
@@ -56,11 +59,17 @@ public class ExerciseController : ControllerBase
     [HttpPost]
     public async Task<CreatedAtRouteResult> Post([FromBody] ExerciseEditDTO dto)
     {
-        var exercise = mapper.Map<Exercise>(dto);
-        context.Add(exercise);
+        var exerciseToSave = mapper.Map<Exercise>(dto);
+        context.Add(exerciseToSave);
         await context.SaveChangesAsync();
         await outputCacheStore.EvictByTagAsync(cacheKey, default);
-        var returnDto = mapper.Map<ExerciseDTO>(exercise);
+
+        var completeExercise = await context.Exercises
+            .Include(x => x.ExerciseType)
+    .Include(x => x.ExerciseEquipment)
+    .Include(x => x.ExerciseMuscle)
+          .FirstOrDefaultAsync(x => x.Id == exerciseToSave.Id);
+        var returnDto = mapper.Map<ExerciseDTO>(completeExercise);
         return CreatedAtRoute("GetExerciseById", new { id = returnDto.Id }, returnDto);
     }
 
@@ -75,13 +84,18 @@ public class ExerciseController : ControllerBase
             return NotFound();
         }
 
-        var exercise = mapper.Map<Exercise>(dto);
-        exercise.Id = guidId;
-        context.Update(exercise);
+        var exerciseToSave = mapper.Map<Exercise>(dto);
+        exerciseToSave.Id = guidId;
+        context.Update(exerciseToSave);
         await context.SaveChangesAsync();
         await outputCacheStore.EvictByTagAsync(cacheKey, default);
 
-        var returnDto = mapper.Map<ExerciseDTO>(exercise);
+        var completeExercise = await context.Exercises
+            .Include(x => x.ExerciseType)
+            .Include(x => x.ExerciseEquipment)
+            .Include(x => x.ExerciseMuscle)
+            .FirstOrDefaultAsync(x => x.Id == exerciseToSave.Id);
+        var returnDto = mapper.Map<ExerciseDTO>(completeExercise);
         return Ok(returnDto);
 
     }
