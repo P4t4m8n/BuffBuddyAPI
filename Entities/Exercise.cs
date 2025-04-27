@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BuffBuddyAPI;
 
-public class Exercise : IGuid
+public class Exercise : IGuid, INotes
 {
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -16,6 +16,7 @@ public class Exercise : IGuid
     [Required(ErrorMessage = "required")]
     [Url(ErrorMessage = "Not a valid URL")]
     public string? YoutubeUrl { get; set; }
+    public string? Note { get; set; }
     // Foreign keys
     [Required(ErrorMessage = "required")]
     public Guid ExerciseMuscleId { get; set; }

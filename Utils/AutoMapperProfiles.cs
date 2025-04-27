@@ -8,6 +8,9 @@ public class AutoMapperProfiles : Profile
     {
         ConfigureExercises();
         ConfigureExerciseInfo();
+        ConfigurePrograms();
+        ConfigureProgramExercises();
+        ConfigureSets();
     }
 
     private void ConfigureExercises()
@@ -51,4 +54,53 @@ public class AutoMapperProfiles : Profile
         CreateMap<ExerciseEquipment, ExerciseEquipmentDTO>();
         CreateMap<ExerciseType, ExerciseTypeDTO>();
     }
+    private void ConfigurePrograms()
+    {
+        CreateMap<Program, ProgramDTO>()
+            .ForMember(dest => dest.Id, opt => opt.MapFrom(src =>
+                src.Id == Guid.Empty ? null : src.Id.ToString()));
+
+        CreateMap<ProgramEditDTO, Program>()
+            .ForMember(dest => dest.Id, opt => opt.MapFrom(src =>
+                string.IsNullOrEmpty(src.Id) ? Guid.Empty : Guid.Parse(src.Id)))
+            // Don't map ProgramExercises directly from DTO to avoid overwriting existing relationships
+            .ForMember(dest => dest.ProgramExercises, opt => opt.Ignore());
+    }
+
+    private void ConfigureProgramExercises()
+    {
+        CreateMap<ProgramExercise, ProgramExerciseDTO>()
+            .ForMember(dest => dest.Id, opt => opt.MapFrom(src =>
+                src.Id == Guid.Empty ? null : src.Id.ToString()))
+            .ForMember(dest => dest.Exercise, opt => opt.MapFrom(src => src.Exercise));
+
+        CreateMap<ProgramExerciseEditDTO, ProgramExercise>()
+            .ForMember(dest => dest.Id, opt => opt.MapFrom(src =>
+                string.IsNullOrEmpty(src.Id) ? Guid.Empty : Guid.Parse(src.Id)))
+            .ForMember(dest => dest.ProgramId, opt => opt.MapFrom(src =>
+                string.IsNullOrEmpty(src.ProgramId) ? Guid.Empty : Guid.Parse(src.ProgramId)))
+            .ForMember(dest => dest.ExerciseId, opt => opt.MapFrom(src =>
+                string.IsNullOrEmpty(src.ExerciseId) ? Guid.Empty : Guid.Parse(src.ExerciseId)))
+            // Don't map Sets directly from DTO to avoid overwriting existing relationships
+            .ForMember(dest => dest.Sets, opt => opt.Ignore())
+            // Don't map navigation properties from DTO
+            .ForMember(dest => dest.Program, opt => opt.Ignore())
+            .ForMember(dest => dest.Exercise, opt => opt.Ignore());
+    }
+
+    private void ConfigureSets()
+    {
+        CreateMap<Set, SetDTO>()
+            .ForMember(dest => dest.Id, opt => opt.MapFrom(src =>
+                src.Id == Guid.Empty ? null : src.Id.ToString()));
+
+        CreateMap<SetEditDTO, Set>()
+            .ForMember(dest => dest.Id, opt => opt.MapFrom(src =>
+                string.IsNullOrEmpty(src.Id) ? Guid.Empty : Guid.Parse(src.Id)))
+            .ForMember(dest => dest.ProgramExerciseId, opt => opt.MapFrom(src =>
+                string.IsNullOrEmpty(src.ProgramExerciseId) ? Guid.Empty : Guid.Parse(src.ProgramExerciseId)))
+            // Don't map navigation properties from DTO
+            .ForMember(dest => dest.ProgramExercise, opt => opt.Ignore());
+    }
 }
+
