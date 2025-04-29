@@ -66,8 +66,8 @@ public class ExerciseController : ControllerBase
 
         var completeExercise = await context.Exercises
             .Include(x => x.ExerciseType)
-    .Include(x => x.ExerciseEquipment)
-    .Include(x => x.ExerciseMuscle)
+            .Include(x => x.ExerciseEquipment)
+            .Include(x => x.ExerciseMuscle)
           .FirstOrDefaultAsync(x => x.Id == exerciseToSave.Id);
         var returnDto = mapper.Map<ExerciseDTO>(completeExercise);
         return CreatedAtRoute("GetExerciseById", new { id = returnDto.Id }, returnDto);
