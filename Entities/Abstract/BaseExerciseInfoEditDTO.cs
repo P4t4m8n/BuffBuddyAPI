@@ -1,8 +1,9 @@
 ﻿
 
 using System.ComponentModel.DataAnnotations;
-
+using BuffBuddyAPI.Validations;
 namespace BuffBuddyAPI;
+[FileOrUrlRequired]
 public abstract class BaseExerciseInfoEditDTO : BaseExerciseInfo, IIDEdit
 {
     public string? Id { get; set; }
