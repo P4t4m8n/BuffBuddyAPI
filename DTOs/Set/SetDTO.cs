@@ -12,6 +12,7 @@ public class SetDTO : IID
     public bool IsMuscleFailure { get; set; } = false; // Indicates if the set was done to muscle failure
     public bool IsWarmup { get; set; } = false; // Indicates if the set was a warmup set
     public bool JointPain { get; set; } = false; // Indicates if the user experienced joint pain during the set
+    public bool IsHistory { get; set; } = false; // Indicates if the set is part of the history
 
 
 }

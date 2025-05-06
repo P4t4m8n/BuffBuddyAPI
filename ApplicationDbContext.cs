@@ -20,6 +20,21 @@ public class ApplicationDbContext : DbContext
       .Property(e => e.Id)
       .HasDefaultValueSql("NEWID()");
 
+    // Configure cascade delete for Program -> ProgramExercise
+    modelBuilder.Entity<Program>()
+        .HasMany(p => p.ProgramExercises)
+        .WithOne(pe => pe.Program)
+        .HasForeignKey(pe => pe.ProgramId)
+        .OnDelete(DeleteBehavior.Cascade);
+
+    // Configure cascade delete for ProgramExercise -> Set
+    modelBuilder.Entity<ProgramExercise>()
+        .HasMany(pe => pe.Sets)
+        .WithOne(s => s.ProgramExercise)
+        .HasForeignKey(s => s.ProgramExerciseId)
+        .OnDelete(DeleteBehavior.Cascade);
+
+
     modelBuilder.Entity<ProgramExercise>()
       .Property(e => e.Id)
       .HasDefaultValueSql("NEWID()");

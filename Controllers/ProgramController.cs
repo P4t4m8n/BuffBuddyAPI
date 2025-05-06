@@ -57,9 +57,7 @@ public class ProgramController : ControllerBase
     [HttpPost]
     public async Task<CreatedAtRouteResult> Post([FromBody] ProgramEditDTO dto)
     {
-        Console.WriteLine("*************");
         var program = mapper.Map<Program>(dto);
-        Console.WriteLine($"Program: {program.Name}");
 
         context.Add(program);
 
@@ -112,6 +110,23 @@ public class ProgramController : ControllerBase
 
         var returnDto = mapper.Map<ProgramDTO>(completeProgram);
         return CreatedAtRoute("GetProgramById", new { id = returnDto.Id }, returnDto);
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<ActionResult> Delete(string id)
+    {
+
+        var guidId = Guid.Parse(id);
+        var deletedRecord = await context.Programs.Where(x => x.Id == guidId).ExecuteDeleteAsync();
+        if (deletedRecord == 0)
+        {
+            return NotFound();
+        }
+
+
+        await outputCacheStore.EvictByTagAsync(cacheKey, default);
+        return NoContent();
+
     }
 
 }
