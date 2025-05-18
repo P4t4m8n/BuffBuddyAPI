@@ -111,6 +111,70 @@ public class ProgramController : ControllerBase
         var returnDto = mapper.Map<ProgramDTO>(completeProgram);
         return CreatedAtRoute("GetProgramById", new { id = returnDto.Id }, returnDto);
     }
+    [HttpPut("{id}")]
+    public async Task<IActionResult> Put(string id, [FromBody] ProgramEditDTO dto)
+    {
+
+        var guidId = Guid.Parse(id);
+        var programExists = await context.Programs.AnyAsync(x => x.Id == guidId);
+        if (!programExists)
+        {
+            return NotFound();
+        }
+        var program = mapper.Map<Program>(dto);
+
+        context.Update(program);
+
+        if (dto.ProgramExercises != null && dto.ProgramExercises.Any())
+        {
+            var programExercises = new List<ProgramExercise>();
+
+            foreach (var peDto in dto.ProgramExercises)
+            {
+                var programExercise = mapper.Map<ProgramExercise>(peDto);
+
+                programExercise.ProgramId = program.Id;
+
+
+                if (peDto.Sets != null && peDto.Sets.Any())
+                {
+                    programExercise.Sets = new List<Set>();
+
+                    foreach (var setDto in peDto.Sets)
+                    {
+                        var set = mapper.Map<Set>(setDto);
+
+                        programExercise.Sets.Add(set);
+                    }
+                }
+                programExercises.Add(programExercise);
+            }
+
+            program.ProgramExercises = programExercises;
+        }
+
+        await context.SaveChangesAsync();
+
+        await outputCacheStore.EvictByTagAsync(cacheKey, default);
+
+        var completeProgram = await context.Programs
+            .Include(p => p.ProgramExercises!)
+                .ThenInclude(pe => pe.Exercise!)
+                    .ThenInclude(e => e.ExerciseType)
+            .Include(p => p.ProgramExercises!)
+                .ThenInclude(pe => pe.Exercise!)
+                    .ThenInclude(e => e.ExerciseEquipment)
+            .Include(p => p.ProgramExercises!)
+                .ThenInclude(pe => pe.Exercise!)
+                    .ThenInclude(e => e.ExerciseMuscle)
+            .Include(p => p.ProgramExercises!)
+                .ThenInclude(pe => pe.Sets)
+            .FirstOrDefaultAsync(p => p.Id == program.Id);
+
+
+        var returnDto = mapper.Map<ProgramDTO>(completeProgram);
+        return Ok(returnDto);
+    }
 
     [HttpDelete("{id}")]
     public async Task<ActionResult> Delete(string id)
