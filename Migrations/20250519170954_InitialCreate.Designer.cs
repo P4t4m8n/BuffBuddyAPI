@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BuffBuddyAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250506150206_FixMultipleCascadePaths")]
-    partial class FixMultipleCascadePaths
+    [Migration("20250519170954_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,6 +24,41 @@ namespace BuffBuddyAPI.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("BuffBuddyAPI.CoreSet", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWID()");
+
+                    b.Property<bool>("IsWarmup")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("Order")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("ProgramExerciseId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Reps")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RepsInReserve")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RestTime")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Weight")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProgramExerciseId");
+
+                    b.ToTable("CoreSets");
+                });
 
             modelBuilder.Entity("BuffBuddyAPI.Exercise", b =>
                 {
@@ -173,6 +208,9 @@ namespace BuffBuddyAPI.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasDefaultValueSql("NEWID()");
 
+                    b.PrimitiveCollection<string>("DaysOfWeek")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<Guid>("ExerciseId")
                         .HasColumnType("uniqueidentifier");
 
@@ -194,51 +232,54 @@ namespace BuffBuddyAPI.Migrations
                     b.ToTable("ProgramExercises");
                 });
 
-            modelBuilder.Entity("BuffBuddyAPI.Set", b =>
+            modelBuilder.Entity("BuffBuddyAPI.UserSet", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
-                        .HasDefaultValueSql("NEWID()");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("ActualReps")
                         .HasColumnType("int");
 
+                    b.Property<int>("ActualRestTime")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ActualWeight")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("CoreSetId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<bool>("IsCompleted")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("IsHistory")
+                    b.Property<bool>("IsJointPain")
                         .HasColumnType("bit");
 
                     b.Property<bool>("IsMuscleFailure")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("IsWarmup")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("JointPain")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("Order")
-                        .HasColumnType("int");
-
                     b.Property<Guid>("ProgramExerciseId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("RestTime")
-                        .HasColumnType("int");
-
-                    b.Property<int>("TargetReps")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Weight")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
+
+                    b.HasIndex("CoreSetId");
 
                     b.HasIndex("ProgramExerciseId");
 
-                    b.ToTable("Sets");
+                    b.ToTable("UserSets");
+                });
+
+            modelBuilder.Entity("BuffBuddyAPI.CoreSet", b =>
+                {
+                    b.HasOne("BuffBuddyAPI.ProgramExercise", "ProgramExercise")
+                        .WithMany("CoreSets")
+                        .HasForeignKey("ProgramExerciseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ProgramExercise");
                 });
 
             modelBuilder.Entity("BuffBuddyAPI.Exercise", b =>
@@ -287,13 +328,21 @@ namespace BuffBuddyAPI.Migrations
                     b.Navigation("Program");
                 });
 
-            modelBuilder.Entity("BuffBuddyAPI.Set", b =>
+            modelBuilder.Entity("BuffBuddyAPI.UserSet", b =>
                 {
-                    b.HasOne("BuffBuddyAPI.ProgramExercise", "ProgramExercise")
-                        .WithMany("Sets")
-                        .HasForeignKey("ProgramExerciseId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                    b.HasOne("BuffBuddyAPI.CoreSet", "CoreSet")
+                        .WithMany()
+                        .HasForeignKey("CoreSetId")
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
+
+                    b.HasOne("BuffBuddyAPI.ProgramExercise", "ProgramExercise")
+                        .WithMany()
+                        .HasForeignKey("ProgramExerciseId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("CoreSet");
 
                     b.Navigation("ProgramExercise");
                 });
@@ -320,7 +369,7 @@ namespace BuffBuddyAPI.Migrations
 
             modelBuilder.Entity("BuffBuddyAPI.ProgramExercise", b =>
                 {
-                    b.Navigation("Sets");
+                    b.Navigation("CoreSets");
                 });
 #pragma warning restore 612, 618
         }

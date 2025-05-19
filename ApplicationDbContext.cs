@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 namespace BuffBuddyAPI;
+
 public class ApplicationDbContext : DbContext
 {
   public DbSet<Exercise> Exercises { get; set; }
@@ -8,7 +9,8 @@ public class ApplicationDbContext : DbContext
   public DbSet<ExerciseEquipment> ExerciseEquipments { get; set; }
   public DbSet<Program> Programs { get; set; }
   public DbSet<ProgramExercise> ProgramExercises { get; set; }
-  public DbSet<Set> Sets { get; set; }
+  public DbSet<CoreSet> CoreSets { get; set; }
+  public DbSet<UserSet> UserSets { get; set; }
   public ApplicationDbContext(DbContextOptions options) : base(options) { }
   protected override void OnModelCreating(ModelBuilder modelBuilder)
   {
@@ -29,17 +31,29 @@ public class ApplicationDbContext : DbContext
 
     // Configure cascade delete for ProgramExercise -> Set
     modelBuilder.Entity<ProgramExercise>()
-        .HasMany(pe => pe.Sets)
+        .HasMany(pe => pe.CoreSets)
         .WithOne(s => s.ProgramExercise)
         .HasForeignKey(s => s.ProgramExerciseId)
         .OnDelete(DeleteBehavior.Cascade);
+
+    modelBuilder.Entity<UserSet>()
+    .HasOne(us => us.ProgramExercise)
+    .WithMany()
+    .HasForeignKey(us => us.ProgramExerciseId)
+    .OnDelete(DeleteBehavior.NoAction);
+    modelBuilder.Entity<UserSet>()
+       .HasOne(us => us.CoreSet)
+       .WithMany()
+       .HasForeignKey(us => us.CoreSetId)
+       .OnDelete(DeleteBehavior.NoAction);
+
 
 
     modelBuilder.Entity<ProgramExercise>()
       .Property(e => e.Id)
       .HasDefaultValueSql("NEWID()");
 
-    modelBuilder.Entity<Set>()
+    modelBuilder.Entity<CoreSet>()
       .Property(e => e.Id)
       .HasDefaultValueSql("NEWID()");
 

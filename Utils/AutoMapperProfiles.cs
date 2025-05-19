@@ -82,7 +82,7 @@ public class AutoMapperProfiles : Profile
             .ForMember(dest => dest.ExerciseId, opt => opt.MapFrom(src =>
                 string.IsNullOrEmpty(src.ExerciseId) ? Guid.Empty : Guid.Parse(src.ExerciseId)))
             // Don't map Sets directly from DTO to avoid overwriting existing relationships
-            .ForMember(dest => dest.Sets, opt => opt.Ignore())
+            .ForMember(dest => dest.CoreSets, opt => opt.Ignore())
             // Don't map navigation properties from DTO
             .ForMember(dest => dest.Program, opt => opt.Ignore())
             .ForMember(dest => dest.Exercise, opt => opt.Ignore());
@@ -90,11 +90,11 @@ public class AutoMapperProfiles : Profile
 
     private void ConfigureSets()
     {
-        CreateMap<Set, SetDTO>()
+        CreateMap<CoreSet, CoreSetDTO>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src =>
                 src.Id == Guid.Empty ? null : src.Id.ToString()));
 
-        CreateMap<SetEditDTO, Set>()
+        CreateMap<SetEditDTO, CoreSet>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src =>
                 string.IsNullOrEmpty(src.Id) ? Guid.Empty : Guid.Parse(src.Id)))
             .ForMember(dest => dest.ProgramExerciseId, opt => opt.MapFrom(src =>

@@ -1,18 +1,15 @@
 ﻿namespace BuffBuddyAPI;
 
-public class SetDTO : IID
+public class UserSetDTO : IID
 {
     public required string Id { get; set; }
-    public int ActualReps { get; set; }
-    public int TargetReps { get; set; }
+    public int Reps { get; set; }
     public int Weight { get; set; } // in kg
     public int RestTime { get; set; } // in seconds
-    public int Order { get; set; } // Order of the set in the exercise
     public bool IsCompleted { get; set; } = false; // Indicates if the set was completed
     public bool IsMuscleFailure { get; set; } = false; // Indicates if the set was done to muscle failure
     public bool IsWarmup { get; set; } = false; // Indicates if the set was a warmup set
-    public bool JointPain { get; set; } = false; // Indicates if the user experienced joint pain during the set
-    public bool IsHistory { get; set; } = false; // Indicates if the set is part of the history
+    public bool IsJointPain { get; set; } = false; // Indicates if the user experienced joint pain during the set
 
 
 }

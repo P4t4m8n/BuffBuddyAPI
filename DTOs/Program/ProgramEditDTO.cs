@@ -15,5 +15,7 @@ public class ProgramEditDTO : IIDEdit
     public required DateTime StartDate { get; set; }
     public DateTime EndDate { get; set; } = DateTime.Now.AddDays(30); // Default to 30 days from now
     public bool IsActive { get; set; } = true;
-    public ICollection<ProgramExerciseEditDTO>? ProgramExercises { get; set; }
+    public ICollection<ProgramExerciseEditDTO>? NewProgramExercises { get; set; }
+    public ICollection<ProgramExerciseEditDTO>? UpdateProgramExercises { get; set; }
+    public ICollection<ProgramExerciseEditDTO>? DeleteProgramExercises { get; set; }
 }
