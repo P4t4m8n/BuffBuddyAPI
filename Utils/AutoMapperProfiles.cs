@@ -72,7 +72,8 @@ public class AutoMapperProfiles : Profile
         CreateMap<ProgramExercise, ProgramExerciseDTO>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src =>
                 src.Id == Guid.Empty ? null : src.Id.ToString()))
-            .ForMember(dest => dest.Exercise, opt => opt.MapFrom(src => src.Exercise));
+            .ForMember(dest => dest.Exercise, opt => opt.MapFrom(src => src.Exercise))
+            .ForMember(dest => dest.Sets, opt => opt.MapFrom(src => src.CoreSets));
 
         CreateMap<ProgramExerciseEditDTO, ProgramExercise>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src =>
