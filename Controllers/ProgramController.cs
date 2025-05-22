@@ -118,7 +118,6 @@ public class ProgramController : ControllerBase
     [HttpPut("{id}")]
     public async Task<IActionResult> Put(string id, [FromBody] ProgramEditDTO dto)
     {
-        // Your existing ID parsing and existence check
         var guidId = Guid.Parse(id);
         var programExists = await context.Programs.AnyAsync(x => x.Id == guidId);
         if (!programExists)
@@ -126,43 +125,37 @@ public class ProgramController : ControllerBase
             return NotFound();
         }
 
-        // Load the existing program to apply updates
         var programToUpdate = await context.Programs
             .Include(p => p.ProgramExercises!)
                 .ThenInclude(pe => pe.CoreSets)
             .FirstOrDefaultAsync(p => p.Id == guidId);
 
-        // This check is for the unlikely scenario where AnyAsync was true, but the entity couldn't be fetched.
         if (programToUpdate == null)
         {
             return StatusCode(500, "Internal server error: Program found by AnyAsync but not by FirstOrDefaultAsync.");
         }
 
-        // Update scalar properties of the loaded Program entity
-        mapper.Map(dto, programToUpdate); // Maps Name, Note, StartDate, EndDate, IsActive
+        mapper.Map(dto, programToUpdate); 
 
         programToUpdate.ProgramExercises ??= new List<ProgramExercise>();
 
-        // Handle DELETED ProgramExercises
         if (dto.DeleteProgramExercises != null && dto.DeleteProgramExercises.Any())
         {
             foreach (var peDtoToDelete in dto.DeleteProgramExercises)
             {
                 if (string.IsNullOrEmpty(peDtoToDelete.Id) || !Guid.TryParse(peDtoToDelete.Id, out var peIdToDelete))
                 {
-                    continue; // Skip if ID is invalid or missing
+                    continue; 
                 }
                 var exerciseToRemove = programToUpdate.ProgramExercises.FirstOrDefault(pe => pe.Id == peIdToDelete);
                 if (exerciseToRemove != null)
                 {
-                    // EF Core will handle deletion of Sets if cascade delete is configured.
-                    // If not, you might need to remove sets explicitly: context.Sets.RemoveRange(exerciseToRemove.Sets);
+          
                     context.ProgramExercises.Remove(exerciseToRemove);
                 }
             }
         }
 
-        // Handle UPDATED ProgramExercises
         if (dto.UpdateProgramExercises != null && dto.UpdateProgramExercises.Any())
         {
             foreach (var peDtoToUpdate in dto.UpdateProgramExercises)
@@ -177,53 +170,43 @@ public class ProgramController : ControllerBase
                     {
                         existingProgramExercise.ExerciseId = exId;
                     }
-                    // existingProgramExercise.DaysOfWeek should be mapped by AutoMapper
-
-                    // Manage Sets for existingProgramExercise (add, update, delete sets)
+   
                     existingProgramExercise.CoreSets ??= new List<CoreSet>();
-                    var currentSetsInDb = existingProgramExercise.CoreSets.ToList(); // Sets currently in DB for this exercise
-                    var dtoSets = peDtoToUpdate.Sets?.ToList() ?? new List<SetEditDTO>(); // Sets from DTO
+                    var currentSetsInDb = existingProgramExercise.CoreSets.ToList(); 
+                    var dtoSets = peDtoToUpdate.Sets?.ToList() ?? new List<SetEditDTO>(); 
 
-                    // Identify Set IDs from DTO that are valid Guids
                     var dtoSetIdsWithGuid = dtoSets
                         .Where(ds => !string.IsNullOrEmpty(ds.Id) && Guid.TryParse(ds.Id, out _))
                         .Select(ds => Guid.Parse(ds.Id!))
                         .ToList();
 
-                    // Delete sets that are in DB but not in DTO's list of existing sets
                     var setsToDelete = currentSetsInDb.Where(s => !dtoSetIdsWithGuid.Contains(s.Id)).ToList();
                     foreach (var setToDelete in setsToDelete)
                     {
                         context.CoreSets.Remove(setToDelete);
                     }
 
-                    // Update existing sets or add new ones
                     foreach (var setDto in dtoSets)
                     {
                         if (!string.IsNullOrEmpty(setDto.Id) && Guid.TryParse(setDto.Id, out var setIdToUpdate))
                         {
-                            // This is an existing set, try to update it
                             var existingSet = currentSetsInDb.FirstOrDefault(s => s.Id == setIdToUpdate);
                             if (existingSet != null)
                             {
                                 mapper.Map(setDto, existingSet);
                                 existingSet.ProgramExerciseId = existingProgramExercise.Id; // Ensure FK
                             }
-                            // If existingSet is null here, it means DTO provided an ID for a set that doesn't belong to this exercise.
-                            // Decide how to handle: ignore, error, or treat as new (if ID is to be ignored for new items).
+                         
                         }
                         else
                         {
-                            // This is a new set, add it
                             var newSet = mapper.Map<CoreSet>(setDto);
                             newSet.ProgramExerciseId = existingProgramExercise.Id; // Ensure FK
-                            // newSet.Id will be generated by DB if DatabaseGeneratedOption.Identity is set
                             existingProgramExercise.CoreSets.Add(newSet);
                         }
                     }
                 }
-                // If existingProgramExercise is null, DTO provided an ID for an exercise that doesn't belong to this program.
-                // Decide how to handle: ignore, error, or treat as new (if ID is to be ignored for new items).
+             
             }
         }
 
