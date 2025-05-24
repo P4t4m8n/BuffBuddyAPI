@@ -7,6 +7,8 @@ public class UserSetDTO : IID
     public int Weight { get; set; } // in kg
     public int RestTime { get; set; } // in seconds
     public bool IsCompleted { get; set; } = false; // Indicates if the set was completed
+    public bool IsFinished { get; set; } = false; // Indicates if the set was finished (for logging in the front)
+
     public bool IsMuscleFailure { get; set; } = false; // Indicates if the set was done to muscle failure
     public bool IsWarmup { get; set; } = false; // Indicates if the set was a warmup set
     public bool IsJointPain { get; set; } = false; // Indicates if the user experienced joint pain during the set

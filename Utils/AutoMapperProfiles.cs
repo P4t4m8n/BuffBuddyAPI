@@ -11,6 +11,7 @@ public class AutoMapperProfiles : Profile
         ConfigurePrograms();
         ConfigureProgramExercises();
         ConfigureSets();
+        ConfigureUserSets();
     }
 
     private void ConfigureExercises()
@@ -102,6 +103,21 @@ public class AutoMapperProfiles : Profile
                 string.IsNullOrEmpty(src.ProgramExerciseId) ? Guid.Empty : Guid.Parse(src.ProgramExerciseId)))
             // Don't map navigation properties from DTO
             .ForMember(dest => dest.ProgramExercise, opt => opt.Ignore());
+    }
+    private void ConfigureUserSets()
+    {
+        CreateMap<UserSet, UserSetDTO>()
+            .ForMember(dest => dest.Id, opt => opt.MapFrom(src =>
+                src.Id == Guid.Empty ? null : src.Id.ToString()));
+
+
+        CreateMap<UserSetEditDTO, UserSet>()
+            .ForMember(dest => dest.Id, opt => opt.MapFrom(src =>
+                string.IsNullOrEmpty(src.Id) ? Guid.Empty : Guid.Parse(src.Id)))
+            .ForMember(dest => dest.CoreSetId, opt => opt.MapFrom(src =>
+                string.IsNullOrEmpty(src.CoreSetId) ? Guid.Empty : Guid.Parse(src.CoreSetId)))
+                .ForMember(dest => dest.ProgramExerciseId, opt => opt.MapFrom(src =>
+                string.IsNullOrEmpty(src.ProgramExerciseId) ? Guid.Empty : Guid.Parse(src.ProgramExerciseId)));
     }
 }
 
